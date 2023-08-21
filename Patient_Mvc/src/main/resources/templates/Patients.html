@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="templete1.html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content1">
+<div class="container mt-2">
+    <div class="card">
+        <div class="card-header">Liste des Patients</div>
+        <div class="card-body">
+            <form method="get" th:action="@{/user/index}">
+                <label>Keyword</label>
+                <input type="text" name="keyword" th:value="${keyword}">
+                <button type="submit" class="btn btn-primary">Chercher</button>
+            </form>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th><th>NOM</th><th>DATE</th><th>MALADE</th><th>SCORE</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p:${listePatient}">
+                    <td th:text="${p.id}"></td>
+                    <td th:text="${p.nom}"></td>
+                    <td th:text="${p.Date_naissance}"></td>
+                    <td th:text="${p.malade}"></td>
+                    <td th:text="${p.score}"></td>
+                    <td th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                        <a onclick="return confirm('etes bous sure de supprimer ?')" class="btn btn-danger"
+                           th:href="@{/admin/delete(id=${p.id},keyword=${keyword},page=${currentPage})}">Delete</a>
+                    </td>
+                    <td th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                        <a class="btn btn-success" th:href="@{/admin/editPatient(id=${p.id},keyword=${keyword},page=${currentPage})}">
+                            Edit</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <ul class="nav nav-pills"> <!--pour faire la pagination-->
+                <li th:each="page,status:${pages}">
+                    <a th:class="${status.index==currentPage?'btn btn-primary ms-1':'btn btn-outline-primary ms-1'}"
+                            class="btn btn-outline-info ms-1" th:text="${status.index}"
+                    th:href="@{/user/index(page=${status.index},keyword=${keyword})}"></a>
+                </li><!--dans href a chaque fois que je veux basculler vers une pages avec le meme keyword de recherche-->
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+</div>
+</body>
+</html>
